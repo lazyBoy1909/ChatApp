@@ -123,4 +123,12 @@ string findUserNameBySocketInfo(map<account, SocketInfo>&session, SocketInfo& cl
 	}
 	return "";
 }
-
+Group getGroupByName(vector<Group> groups, string name)
+{
+	for (int i = 0; i < groups.size(); i++)
+	{
+		if (groups[i].name == name) return groups[i];
+	}
+	Group tmp;
+	tmp.name = "";
+}

@@ -1,30 +1,27 @@
 ﻿C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppBuild.targets(392,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (Server.vcxproj).  This can lead to incorrect clean and rebuild behavior.
-  Communication.cpp
-c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\communication.cpp(51): warning C4018: '<': signed/unsigned mismatch
-c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\communication.cpp(64): warning C4018: '<': signed/unsigned mismatch
-c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\communication.cpp(75): warning C4018: '<': signed/unsigned mismatch
-c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\communication.cpp(79): warning C4018: '<': signed/unsigned mismatch
-c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\communication.cpp(97): warning C4018: '<': signed/unsigned mismatch
-c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\communication.cpp(101): warning C4018: '<': signed/unsigned mismatch
-  Generating Code...
-  Compiling...
   Server.cpp
 c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\server.cpp(15): warning C4005: 'BUFF_SIZE': macro redefinition
   c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\protocol.h(10): note: see previous definition of 'BUFF_SIZE'
-c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\server.cpp(118): warning C4101: 'sendBuff': unreferenced local variable
-c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\server.cpp(118): warning C4101: 'recvBuff': unreferenced local variable
-c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\server.cpp(122): warning C4101: 'ret': unreferenced local variable
-c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\server.cpp(151): warning C4101: 'i': unreferenced local variable
-  MessageHandling.cpp
-c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\messagehandling.cpp(14): warning C4018: '<': signed/unsigned mismatch
-c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\messagehandling.cpp(13): warning C4101: 'pos': unreferenced local variable
-c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\messagehandling.cpp(102): warning C4553: '==': operator has no effect; did you intend '='?
-  LoginFunction.cpp
-c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\loginfunction.cpp(14): warning C4005: 'BUFF_SIZE': macro redefinition
-  c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\protocol.h(10): note: see previous definition of 'BUFF_SIZE'
-c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\loginfunction.cpp(86): warning C4018: '<': signed/unsigned mismatch
-c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\loginfunction.cpp(88): warning C4018: '<': signed/unsigned mismatch
+c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\server.cpp(126): warning C4101: 'sendBuff': unreferenced local variable
+c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\server.cpp(126): warning C4101: 'recvBuff': unreferenced local variable
+c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\server.cpp(130): warning C4101: 'ret': unreferenced local variable
+c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\server.cpp(159): warning C4101: 'i': unreferenced local variable
+  Communication.cpp
+c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\communication.cpp(14): warning C4018: '<': signed/unsigned mismatch
+c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\communication.cpp(22): warning C4018: '<': signed/unsigned mismatch
+c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\communication.cpp(71): warning C4018: '<': signed/unsigned mismatch
+c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\communication.cpp(84): warning C4018: '<': signed/unsigned mismatch
+c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\communication.cpp(90): warning C4018: '<': signed/unsigned mismatch
+c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\communication.cpp(107): warning C4018: '<': signed/unsigned mismatch
+c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\communication.cpp(111): warning C4018: '<': signed/unsigned mismatch
+c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\communication.cpp(120): warning C4018: '<': signed/unsigned mismatch
+c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\communication.cpp(127): warning C4018: '<': signed/unsigned mismatch
+c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\communication.cpp(140): warning C4018: '<': signed/unsigned mismatch
+c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\communication.cpp(144): warning C4018: '<': signed/unsigned mismatch
+c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\communication.cpp(164): warning C4018: '<': signed/unsigned mismatch
+c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\communication.cpp(176): warning C4018: '<': signed/unsigned mismatch
+c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\communication.cpp(183): warning C4018: '<': signed/unsigned mismatch
+c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\communication.cpp(185): warning C4477: 'printf' : format string '%s' requires an argument of type 'char *', but variadic argument 1 has type 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'
   Generating Code...
-c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\messagehandling.cpp(111): warning C4172: returning address of local variable or temporary: tmp
   NetworkProgrammingProject.vcxproj -> C:\Users\admin\Documents\Visual Studio 2015\Projects\NetworkProgrammingProject\Debug\NetworkProgrammingProject.exe
   NetworkProgrammingProject.vcxproj -> C:\Users\admin\Documents\Visual Studio 2015\Projects\NetworkProgrammingProject\Debug\NetworkProgrammingProject.pdb (Partial PDB)

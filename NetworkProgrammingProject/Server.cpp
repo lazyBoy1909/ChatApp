@@ -64,6 +64,14 @@ void ServerHandle(SocketInfo &clientManager)
 	{
 		sendGroupMessage(session, groups, message[2], message[1], message[3]);
 	}
+	else if (message[0] == "ADD")
+	{
+		addGroupMember(session, groups, message);
+	}
+	else if (message[0] == "LEAVE")
+	{
+		leaveGroup(session, groups, message[2], message[1]);
+	}
 }
 int main(int argc, char* argv[])
 {
