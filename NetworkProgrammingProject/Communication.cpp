@@ -179,6 +179,7 @@ void leaveGroup(map<account, SocketInfo> &session, vector<Group> &groups, string
 	}
 	vector<string>::iterator it = find(groups[i].userMember.begin(), groups[i].userMember.end(), sender);
 	groups[i].userMember.erase(it, it + 1);
+	if (groups[i].userMember.size() == 0) groups.erase(groups.begin()+i);
 	sendMessage(findUserInfo(session, sender).clientSock, res);
 	for (int k = 0; k < groups[i].userMember.size(); k++)
 	{
