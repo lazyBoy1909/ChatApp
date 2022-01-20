@@ -172,6 +172,8 @@ void leaveGroup(map<account, SocketInfo> &session, vector<Group> &groups, string
 	string res = "LEAVE";
 	res += SPACE_2;
 	res += LEAVE_SUCCESS;
+	res += SPACE_2;
+	res += groupName;
 	int i;
 	for (i = 0; i < groups.size(); i++)
 	{
