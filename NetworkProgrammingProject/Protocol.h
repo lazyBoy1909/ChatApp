@@ -9,8 +9,8 @@ using namespace std;
 #define Protocol
 #define BUFF_SIZE 4096
 #define SPACE_1 "\r\n"
-#define SPACE_2 '$'
-#define SPACE_3 '*'
+#define SPACE_2 char(6)
+#define SPACE_3 char(17)
 #define LOGIN_SUCCESS "10"
 #define LOGIN_NO_ACCOUNT "11"
 #define LOGIN_SERVER_ERROR "12"

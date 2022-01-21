@@ -58,6 +58,7 @@ vector<string> ReceiveMessage(SocketInfo* client, DWORD &index, DWORD &nEvents, 
 			if (buff[ret - 2] == '\r' && buff[ret - 1] == '\n') break;
 		}
 	}
+	cout << answer << endl;
 	vector<string> res;
 	res= DivideMessage(answer);
 	return res;

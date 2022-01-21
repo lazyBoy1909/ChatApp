@@ -166,6 +166,7 @@ int main(int argc, char* argv[])
 					client[nEvents].clientSock = connSock;
 					events[nEvents] = WSACreateEvent();
 					client[nEvents].clientAddr = clientAddr;
+					cout << "Accept new client from " << endl;
 					WSAEventSelect(client[nEvents].clientSock, events[nEvents], FD_READ | FD_CLOSE);
 					nEvents++;
 				}

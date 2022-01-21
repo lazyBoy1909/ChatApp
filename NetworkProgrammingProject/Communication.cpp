@@ -110,7 +110,10 @@ void sendGroupMessage(map<account, SocketInfo> &session,vector<Group> &groups, s
 		{
 			for (int k = 0; k < groups[i].userMember.size(); k++)
 			{
-				sendMessage(findUserInfo(session, groups[i].userMember[k]).clientSock, response);
+				if (groups[i].userMember[k] != sender)
+				{
+					sendMessage(findUserInfo(session, groups[i].userMember[k]).clientSock, response);
+				}
 			}
 		}
 	}
