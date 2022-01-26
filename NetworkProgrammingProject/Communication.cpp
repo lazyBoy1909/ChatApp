@@ -174,17 +174,32 @@ void leaveGroup(map<account, SocketInfo> &session, vector<Group> &groups, string
 {
 	string res = "LEAVE";
 	res += SPACE_2;
-	res += LEAVE_SUCCESS;
-	res += SPACE_2;
-	res += groupName;
 	int i;
 	for (i = 0; i < groups.size(); i++)
 	{
 		if (groups[i].name == groupName) break;
 	}
 	vector<string>::iterator it = find(groups[i].userMember.begin(), groups[i].userMember.end(), sender);
-	groups[i].userMember.erase(it, it + 1);
-	if (groups[i].userMember.size() == 0) groups.erase(groups.begin()+i);
+	if (groups[i].userMember.size() == 0)
+	{
+		return;
+	}
+	else if (groups[i].userMember.size() == 1)
+	{
+		groups[i].userMember.erase(it, it + 1);
+		groups.erase(groups.begin() + i);
+		res += LEAVE_ALONE;
+		res += SPACE_2;
+		res += groupName;
+		sendMessage(findUserInfo(session, sender).clientSock, res);
+		return;
+	}
+	else
+	{
+		res += LEAVE_SUCCESS;
+		res += SPACE_2;
+		res += groupName;
+	}
 	sendMessage(findUserInfo(session, sender).clientSock, res);
 	for (int k = 0; k < groups[i].userMember.size(); k++)
 	{
