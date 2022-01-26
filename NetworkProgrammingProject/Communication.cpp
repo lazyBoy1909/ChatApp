@@ -179,6 +179,7 @@ void leaveGroup(map<account, SocketInfo> &session, vector<Group> &groups, string
 	{
 		if (groups[i].name == groupName) break;
 	}
+	if (i == groups.size()) return;
 	vector<string>::iterator it = find(groups[i].userMember.begin(), groups[i].userMember.end(), sender);
 	if (groups[i].userMember.size() == 0)
 	{
@@ -196,6 +197,7 @@ void leaveGroup(map<account, SocketInfo> &session, vector<Group> &groups, string
 	}
 	else
 	{
+		groups[i].userMember.erase(it, it + 1);
 		res += LEAVE_SUCCESS;
 		res += SPACE_2;
 		res += groupName;

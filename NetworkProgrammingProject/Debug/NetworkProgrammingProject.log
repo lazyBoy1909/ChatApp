@@ -13,7 +13,7 @@ c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\n
 c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\communication.cpp(147): warning C4018: '<': signed/unsigned mismatch
 c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\communication.cpp(167): warning C4018: '<': signed/unsigned mismatch
 c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\communication.cpp(178): warning C4018: '<': signed/unsigned mismatch
-c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\communication.cpp(204): warning C4018: '<': signed/unsigned mismatch
-c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\communication.cpp(206): warning C4477: 'printf' : format string '%s' requires an argument of type 'char *', but variadic argument 1 has type 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'
+c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\communication.cpp(206): warning C4018: '<': signed/unsigned mismatch
+c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\networkprogrammingproject\communication.cpp(208): warning C4477: 'printf' : format string '%s' requires an argument of type 'char *', but variadic argument 1 has type 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'
   NetworkProgrammingProject.vcxproj -> C:\Users\admin\Documents\Visual Studio 2015\Projects\NetworkProgrammingProject\Debug\NetworkProgrammingProject.exe
   NetworkProgrammingProject.vcxproj -> C:\Users\admin\Documents\Visual Studio 2015\Projects\NetworkProgrammingProject\Debug\NetworkProgrammingProject.pdb (Partial PDB)
