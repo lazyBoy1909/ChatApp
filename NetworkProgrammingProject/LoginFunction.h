@@ -15,9 +15,9 @@ using namespace std;
 
 int Authenticate(map<account, SocketInfo> &session);
 
-string LoginHandling(map<account, SocketInfo> &session, account acc,sockaddr_in clientAddr, SOCKET clientSock);
+string LoginHandling(map<account, SocketInfo> &session, account acc,sockaddr_in clientAddr, SOCKET clientSock, CRITICAL_SECTION &sessionCriticalSection);
 
-string LogoutHandling(map<account, SocketInfo> &session,string username);
+string LogoutHandling(map<account, SocketInfo> &session,string username, CRITICAL_SECTION &sessionCriticalSection);
 
-string deleteLoginSession(map<account, SocketInfo> &session, vector<Group> &groups, SocketInfo &client);
+string deleteLoginSession(map<account, SocketInfo> &session, vector<Group> &groups, SocketInfo &client, CRITICAL_SECTION &sessionCriticalSection, CRITICAL_SECTION &groupCriticalSection);
 #endif 

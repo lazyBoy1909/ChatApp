@@ -97,10 +97,11 @@ int sendMessage(SOCKET connectionSocket, string message)
 	return 1;
 }
 //find Socket information are loggin with username
-SocketInfo& findUserInfo(map<account, SocketInfo> &session, string username)
+SocketInfo& findUserInfo(map<account, SocketInfo> &session, string username, CRITICAL_SECTION &sessionCriticalSection)
 {
 	SocketInfo tmp;
 	tmp.clientSock == INVALID_SOCKET;
+	EnterCriticalSection(&sessionCriticalSection);
 	map<account, SocketInfo>::iterator it;
 	for (it = session.begin(); it != session.end(); it++)
 	{
@@ -109,11 +110,13 @@ SocketInfo& findUserInfo(map<account, SocketInfo> &session, string username)
 			return it->second;
 		}
 	}
+	LeaveCriticalSection(&sessionCriticalSection);
 	return tmp;
 }
 
-string findUserNameBySocketInfo(map<account, SocketInfo>&session, SocketInfo& client)
+string findUserNameBySocketInfo(map<account, SocketInfo>&session, SocketInfo& client, CRITICAL_SECTION &sessionCriticalSection)
 {
+	EnterCriticalSection(&sessionCriticalSection);
 	map<account, SocketInfo>::iterator it;
 	for (it = session.begin(); it != session.end(); it++)
 	{
@@ -122,6 +125,7 @@ string findUserNameBySocketInfo(map<account, SocketInfo>&session, SocketInfo& cl
 			return it->first.username;
 		}
 	}
+	LeaveCriticalSection(&sessionCriticalSection);
 	return "";
 }
 Group getGroupByName(vector<Group> groups, string name)

@@ -8,9 +8,10 @@
 #include<map>
 using namespace std;
 //vector[0] for sender, vector[1] for receiver
-void getListGroup(map<account, SocketInfo> &session, vector<Group> &groups, string sender)
+void getListGroup(map<account, SocketInfo> &session, vector<Group> &groups, string sender, CRITICAL_SECTION &sessionCriticalSection, CRITICAL_SECTION &groupCriticalSection)
 {
 	string res = "LISTGROUP";
+	EnterCriticalSection(&groupCriticalSection);
 	for (int i = 0; i < groups.size(); i++)
 	{
 		vector<string> list = groups[i].userMember;
@@ -26,9 +27,10 @@ void getListGroup(map<account, SocketInfo> &session, vector<Group> &groups, stri
 			}
 		}
 	}
-	sendMessage(findUserInfo(session, sender).clientSock, res);
+	LeaveCriticalSection(&groupCriticalSection);
+	sendMessage(findUserInfo(session, sender,sessionCriticalSection).clientSock, res);
 }
-void PostMessage(map<account, SocketInfo> &session,string sender, string receiver, string message)
+void PostMessage(map<account, SocketInfo> &session,string sender, string receiver, string message, CRITICAL_SECTION &sessionCriticalSection)
 {
 	string temp1 = "POST";
 	 temp1+= SPACE_2;
@@ -37,7 +39,7 @@ void PostMessage(map<account, SocketInfo> &session,string sender, string receive
 	 temp2 += sender;
 	 temp2 += SPACE_2;
 	 temp2 += message;
-	 SOCKET sock = findUserInfo(session, receiver).clientSock;
+	 SOCKET sock = findUserInfo(session, receiver, sessionCriticalSection).clientSock;
 	 if (sock == INVALID_SOCKET)
 	 {
 		 temp1 += POST_FAIL_OFFLINE;
@@ -45,13 +47,14 @@ void PostMessage(map<account, SocketInfo> &session,string sender, string receive
 	 else
 	 {
 		 temp1 += POST_SUCCESS;
-		 sendMessage(findUserInfo(session, receiver).clientSock, temp2);
+		 sendMessage(findUserInfo(session, receiver, sessionCriticalSection).clientSock, temp2);
 	 }
-	 sendMessage(findUserInfo(session, sender).clientSock, temp1);
+	 sendMessage(findUserInfo(session, sender, sessionCriticalSection).clientSock, temp1);
 }
-void getListUser(map<account, SocketInfo> &session, string sender)
+void getListUser(map<account, SocketInfo> &session, string sender, CRITICAL_SECTION &sessionCriticalSection)
 {
 	string res = "LISTUSER";
+	EnterCriticalSection(&sessionCriticalSection);
 	map<account, SocketInfo>::iterator it;
 	for (it = session.begin(); it != session.end(); it++)
 	{
@@ -61,19 +64,21 @@ void getListUser(map<account, SocketInfo> &session, string sender)
 			res += it->first.username;
 		}
 	}
-	sendMessage(findUserInfo(session, sender).clientSock, res);
+	LeaveCriticalSection(&sessionCriticalSection);
+	sendMessage(findUserInfo(session, sender, sessionCriticalSection).clientSock, res);
 }
 
-void createGroup(vector<Group> &groups, map<account, SocketInfo> &session, vector<string> message)
+void createGroup(vector<Group> &groups, map<account, SocketInfo> &session, vector<string> message, CRITICAL_SECTION &sessionCriticalSection, CRITICAL_SECTION &groupCriticalSection)
 {
 	string res = "GROUP";
 	res += SPACE_2;
+	EnterCriticalSection(&groupCriticalSection);
 	for (int i = 0; i < groups.size(); i++)
 	{
 		if (groups[i].name == message[1])
 		{
 			res += GROUP_FAIL_NAME;
-			sendMessage(findUserInfo(session, message[2]).clientSock, res);
+			sendMessage(findUserInfo(session, message[2],sessionCriticalSection).clientSock, res);
 			return;
 		}
 	}
@@ -86,16 +91,18 @@ void createGroup(vector<Group> &groups, map<account, SocketInfo> &session, vecto
 		newGroup.userMember.push_back(message[i]);
 	}
 	groups.push_back(newGroup);
+	LeaveCriticalSection(&groupCriticalSection);
 	int siz = groups.size();
 	for (int k = 0; k< groups[siz-1].userMember.size(); k++)
 	{
-		getListGroup(session, groups, groups[siz-1].userMember[k]);
+		getListGroup(session, groups, groups[siz-1].userMember[k],sessionCriticalSection, groupCriticalSection);
 	}
-	//sendMessage(findUserInfo(session, message[2]).clientSock, res);
+
+	sendMessage(findUserInfo(session, message[2], sessionCriticalSection).clientSock, res);
 }
 
 
-void sendGroupMessage(map<account, SocketInfo> &session,vector<Group> &groups, string groupName, string sender, string payload)
+void sendGroupMessage(map<account, SocketInfo> &session,vector<Group> &groups, string groupName, string sender, string payload, CRITICAL_SECTION &sessionCriticalSection, CRITICAL_SECTION &groupCriticalSection)
 {
 	string response = "MESSAGEGROUP";
 	response += SPACE_2;
@@ -104,6 +111,7 @@ void sendGroupMessage(map<account, SocketInfo> &session,vector<Group> &groups, s
 	response += sender;
 	response += SPACE_2;	
 	response += payload;
+	EnterCriticalSection(&groupCriticalSection);
 	for (int i = 0; i < groups.size(); i++)
 	{
 		if (groups[i].name == groupName)
@@ -112,13 +120,14 @@ void sendGroupMessage(map<account, SocketInfo> &session,vector<Group> &groups, s
 			{
 				if (groups[i].userMember[k] != sender)
 				{
-					sendMessage(findUserInfo(session, groups[i].userMember[k]).clientSock, response);
+					sendMessage(findUserInfo(session, groups[i].userMember[k],sessionCriticalSection).clientSock, response);
 				}
 			}
 		}
 	}
+	LeaveCriticalSection(&groupCriticalSection);
 }
-void updateGroup(map<account, SocketInfo> &session,vector<Group> &groups, string nameMember)
+void updateGroup(map<account, SocketInfo> &session,vector<Group> &groups, string nameMember, CRITICAL_SECTION &sessionCriticalSection, CRITICAL_SECTION &groupCriticalSection)
 {
 	for (int i = 0; i < groups.size(); i++)
 	{
@@ -129,17 +138,18 @@ void updateGroup(map<account, SocketInfo> &session,vector<Group> &groups, string
 		{
 			for (int k = 0; k<list.size(); k++)
 			{
-				getListGroup(session, groups, list[k]);
+				getListGroup(session, groups, list[k],sessionCriticalSection,groupCriticalSection);
 			}
 		}
 	}
 }
-void addGroupMember(map<account, SocketInfo> &session, vector<Group> &groups, vector<string> message)
+void addGroupMember(map<account, SocketInfo> &session, vector<Group> &groups, vector<string> message, CRITICAL_SECTION &sessionCriticalSection, CRITICAL_SECTION &groupCriticalSection)
 {
 	string res = "ADD";
 	res += SPACE_2;
 	res += ADD_SUCCESS;
 	int i, k;
+	EnterCriticalSection(&groupCriticalSection);
 	for (i = 0; i < groups.size(); i++)
 	{
 		if (groups[i].name == message[2])
@@ -147,7 +157,7 @@ void addGroupMember(map<account, SocketInfo> &session, vector<Group> &groups, ve
 			for (k = 3; k < message.size(); k++)
 			{
 				// if guest is online
-				if (findUserInfo(session, message[k]).clientSock != INVALID_SOCKET)
+				if (findUserInfo(session, message[k], sessionCriticalSection).clientSock != INVALID_SOCKET)
 				{
 					//if guest is not in group then add
 					vector<string>::iterator it = find(groups[i].userMember.begin(), groups[i].userMember.end(), message[k]);
@@ -162,19 +172,21 @@ void addGroupMember(map<account, SocketInfo> &session, vector<Group> &groups, ve
 			break;
 		}
 	}
-	//sendMessage(findUserInfo(session, message[1]).clientSock, res);
+	LeaveCriticalSection(&groupCriticalSection);
+	sendMessage(findUserInfo(session, message[1],sessionCriticalSection).clientSock, res);
 	//send message update group's infor to all members
 	for (int j = 0; j < groups[i].userMember.size(); j++)
 	{
-		getListGroup(session, groups, groups[i].userMember[j]);
+		getListGroup(session, groups, groups[i].userMember[j],sessionCriticalSection,groupCriticalSection);
 	}
 }
 
-void leaveGroup(map<account, SocketInfo> &session, vector<Group> &groups, string groupName, string sender)
+void leaveGroup(map<account, SocketInfo> &session, vector<Group> &groups, string groupName, string sender, CRITICAL_SECTION &sessionCriticalSection, CRITICAL_SECTION &groupCriticalSection)
 {
 	string res = "LEAVE";
 	res += SPACE_2;
 	int i;
+	EnterCriticalSection(&groupCriticalSection);
 	for (i = 0; i < groups.size(); i++)
 	{
 		if (groups[i].name == groupName) break;
@@ -192,7 +204,7 @@ void leaveGroup(map<account, SocketInfo> &session, vector<Group> &groups, string
 		res += LEAVE_ALONE;
 		res += SPACE_2;
 		res += groupName;
-		sendMessage(findUserInfo(session, sender).clientSock, res);
+		sendMessage(findUserInfo(session, sender,sessionCriticalSection).clientSock, res);
 		return;
 	}
 	else
@@ -202,10 +214,11 @@ void leaveGroup(map<account, SocketInfo> &session, vector<Group> &groups, string
 		res += SPACE_2;
 		res += groupName;
 	}
-	sendMessage(findUserInfo(session, sender).clientSock, res);
+	LeaveCriticalSection(&groupCriticalSection);
+	sendMessage(findUserInfo(session, sender, sessionCriticalSection).clientSock, res);
 	for (int k = 0; k < groups[i].userMember.size(); k++)
 	{
 		printf("%s\n", groups[i].userMember[k]);
-		getListGroup(session, groups, groups[i].userMember[k]);
+		getListGroup(session, groups, groups[i].userMember[k], sessionCriticalSection, groupCriticalSection);
 	}
 }

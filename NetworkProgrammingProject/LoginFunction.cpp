@@ -38,13 +38,14 @@ int Authenticate(map<account, SocketInfo> &session)
 	return returnVal;
 }
 
-string LoginHandling(map<account, SocketInfo>&session,account acc,sockaddr_in clientAddr, SOCKET clientSock)
+string LoginHandling(map<account, SocketInfo>&session,account acc,sockaddr_in clientAddr, SOCKET clientSock, CRITICAL_SECTION &sessionCriticalSection)
 {
 	//no DB- no account exist
 	string ans = "USER";
 	ans += SPACE_2;
 	int check = 0;
 	map<account, SocketInfo>::iterator it;
+	EnterCriticalSection(&sessionCriticalSection);
 	for (it = session.begin(); it != session.end(); it++)
 	{
 		if (it->first.username == acc.username && it->first.password == acc.password)
@@ -68,21 +69,25 @@ string LoginHandling(map<account, SocketInfo>&session,account acc,sockaddr_in cl
 	//account not existed
 	else ans+= LOGIN_NO_ACCOUNT;
 	sendMessage(clientSock, ans);
+	LeaveCriticalSection(&sessionCriticalSection);
 	return ans;
 }
 
-string LogoutHandling(map<account, SocketInfo> &session, string username)
+string LogoutHandling(map<account, SocketInfo> &session, string username, CRITICAL_SECTION &sessionCriticalSection)
 {
 	string ans = "QUIT";
 	ans += SPACE_2;
-	findUserInfo(session, username).clientSock = INVALID_SOCKET;
+	EnterCriticalSection(&sessionCriticalSection);
+	findUserInfo(session, username,sessionCriticalSection).clientSock = INVALID_SOCKET;
+	LeaveCriticalSection(&sessionCriticalSection);
 	ans+=LOGOUT_SUCCESS;
 	return ans;
 }
-string deleteLoginSession(map<account, SocketInfo> &session, vector<Group> &groups, SocketInfo &client)
+string deleteLoginSession(map<account, SocketInfo> &session, vector<Group> &groups, SocketInfo &client, CRITICAL_SECTION &sessionCriticalSection, CRITICAL_SECTION &groupCriticalSection)
 {
-	string userName = findUserNameBySocketInfo(session, client);
-	string res = LogoutHandling(session, userName);
+	string userName = findUserNameBySocketInfo(session, client,sessionCriticalSection);
+	string res = LogoutHandling(session, userName,sessionCriticalSection);
+	EnterCriticalSection(&groupCriticalSection);
 	for (int i = 0; i < groups.size(); i++)
 	{
 		for (int k = 0; k < groups[i].userMember.size(); k++)
@@ -93,5 +98,6 @@ string deleteLoginSession(map<account, SocketInfo> &session, vector<Group> &grou
 			}
 		}
 	}
+	LeaveCriticalSection(&groupCriticalSection);
 	return res;
 }

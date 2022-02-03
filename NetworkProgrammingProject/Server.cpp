@@ -23,6 +23,8 @@ map<account, SocketInfo> session;
 //list of Group
 vector<Group> groups;
 
+CRITICAL_SECTION sessionCriticalSection, groupCriticalSection;
+
 void ServerHandle(SocketInfo &clientManager, SocketInfo* client, DWORD &index, DWORD &nEvents, WSAEVENT* events)
 {
 	//receive message from clients
@@ -34,40 +36,40 @@ void ServerHandle(SocketInfo &clientManager, SocketInfo* client, DWORD &index, D
 		account acc;
 		acc.username = message[1];
 		acc.password = message[2];
-		string response = LoginHandling(session, acc, clientManager.clientAddr, clientManager.clientSock);
+		string response = LoginHandling(session, acc, clientManager.clientAddr, clientManager.clientSock,sessionCriticalSection);
 		cout << response << endl;
 	}
 	else if (message[0] == "QUIT")
 	{
-		sendMessage(clientManager.clientSock, deleteLoginSession(session, groups, clientManager));
+		sendMessage(clientManager.clientSock, deleteLoginSession(session, groups, clientManager,sessionCriticalSection,groupCriticalSection));
 	}
 	else if (message[0] == "POST")
 	{
-		PostMessage(session, message[1], message[2], message[3]);
+		PostMessage(session, message[1], message[2], message[3],sessionCriticalSection);
 	}
 	else if (message[0] == "LISTUSER")
 	{
-		getListUser(session, message[1]);
+		getListUser(session, message[1], sessionCriticalSection);
 	}
 	else if (message[0] == "GROUP")
 	{
-		createGroup(groups, session, message);
+		createGroup(groups, session, message, sessionCriticalSection, groupCriticalSection);
 	}
 	else if (message[0] == "LISTGROUP")
 	{
-		getListGroup(session, groups, message[1]);
+		getListGroup(session, groups, message[1], sessionCriticalSection, groupCriticalSection);
 	}
 	else if (message[0] == "BROADCAST")
 	{
-		sendGroupMessage(session, groups, message[2], message[1], message[3]);
+		sendGroupMessage(session, groups, message[2], message[1], message[3], sessionCriticalSection, groupCriticalSection);
 	}
 	else if (message[0] == "ADD")
 	{
-		addGroupMember(session, groups, message);
+		addGroupMember(session, groups, message, sessionCriticalSection, groupCriticalSection);
 	}
 	else if (message[0] == "LEAVE")
 	{
-		leaveGroup(session, groups, message[2], message[1]);
+		leaveGroup(session, groups, message[2], message[1], sessionCriticalSection, groupCriticalSection);
 	}
 }
 
@@ -151,9 +153,9 @@ unsigned __stdcall subThread(void *param)
 					printf("FD_CLOSE failed with error %d\n", sockEvent.iErrorCode[FD_CLOSE_BIT]);
 				}
 				//Release socket and event
-				if (findUserNameBySocketInfo(session, client[index]) != "")
+				if (findUserNameBySocketInfo(session, client[index], sessionCriticalSection) != "")
 				{
-					deleteLoginSession(session, groups, client[index]);
+					deleteLoginSession(session, groups, client[index], sessionCriticalSection, groupCriticalSection);
 				}
 
 				closesocket(client[index].clientSock);
@@ -209,6 +211,8 @@ int main(int argc, char* argv[])
 		return 0;
 	}
 	printf("Server started!\n");
+	InitializeCriticalSection(&sessionCriticalSection);
+	InitializeCriticalSection(&groupCriticalSection);
 	_beginthreadex(0, 0, subThread, (void*)listenSock, 0, 0);
 	_getch();
 }
