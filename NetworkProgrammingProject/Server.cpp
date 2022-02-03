@@ -11,22 +11,19 @@
 #include "Protocol.h"
 #include"Communication.h"
 #include<string>
+#include "process.h"
 #define PORT 5500
 #define BUFF_SIZE 2048
 #define SERVER_ADDR "127.0.0.1"
 #define MAX_CLIENT 64
 using namespace std;
-SocketInfo client[MAX_CLIENT];
-WSAEVENT	events[WSA_MAXIMUM_WAIT_EVENTS];
-DWORD		nEvents = 0;
-DWORD		index;
-WSANETWORKEVENTS sockEvent;
 //key of session is username, value of session is struct SocketInfo (null if user hasn't logged in)
 map<account, SocketInfo> session;
 
 //list of Group
 vector<Group> groups;
-void ServerHandle(SocketInfo &clientManager)
+
+void ServerHandle(SocketInfo &clientManager, SocketInfo* client, DWORD &index, DWORD &nEvents, WSAEVENT* events)
 {
 	//receive message from clients
 	vector<string> message = ReceiveMessage(client, index, nEvents, events);
@@ -46,7 +43,7 @@ void ServerHandle(SocketInfo &clientManager)
 	}
 	else if (message[0] == "POST")
 	{
-		PostMessage(session, message[1],message[2],message[3]);
+		PostMessage(session, message[1], message[2], message[3]);
 	}
 	else if (message[0] == "LISTUSER")
 	{
@@ -54,7 +51,7 @@ void ServerHandle(SocketInfo &clientManager)
 	}
 	else if (message[0] == "GROUP")
 	{
-		createGroup(groups,session, message);
+		createGroup(groups, session, message);
 	}
 	else if (message[0] == "LISTGROUP")
 	{
@@ -73,27 +70,20 @@ void ServerHandle(SocketInfo &clientManager)
 		leaveGroup(session, groups, message[2], message[1]);
 	}
 }
-int main(int argc, char* argv[])
+
+unsigned __stdcall subThread(void *param)
 {
-
-	//Step 1: Initiate WinSock
-	WSADATA wsaData;
-	WORD wVersion = MAKEWORD(2, 2);
-	if (WSAStartup(wVersion, &wsaData)) {
-		printf("Winsock 2.2 is not supported\n");
-		return 0;
-	}
-
-	//Step 2: Construct LISTEN socket	
-	SOCKET listenSock;
-	listenSock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-
-	//Step 3: Bind address to socket
-	sockaddr_in serverAddr;
-	serverAddr.sin_family = AF_INET;
-	serverAddr.sin_port = htons(PORT);
-	inet_pton(AF_INET, SERVER_ADDR, &serverAddr.sin_addr);
-
+	SocketInfo client[MAX_CLIENT];
+	WSAEVENT	events[WSA_MAXIMUM_WAIT_EVENTS];
+	DWORD		nEvents = 0;
+	DWORD		index;
+	WSANETWORKEVENTS sockEvent;
+	char sendBuff[BUFF_SIZE], recvBuff[BUFF_SIZE];
+	SOCKET connSock;
+	sockaddr_in clientAddr;
+	int clientAddrLen = sizeof(clientAddr);
+	int ret, i;
+	SOCKET listenSock = (SOCKET)param;
 	client[0].clientSock = listenSock;
 	events[0] = WSACreateEvent(); //create new events
 	nEvents++;
@@ -101,34 +91,6 @@ int main(int argc, char* argv[])
 	// Associate event types FD_ACCEPT and FD_CLOSE
 	// with the listening socket and newEvent   
 	WSAEventSelect(client[0].clientSock, events[0], FD_ACCEPT | FD_CLOSE);
-
-
-	if (bind(listenSock, (sockaddr *)&serverAddr, sizeof(serverAddr)))
-	{
-		printf("Error %d: Cannot associate a local address with server socket.", WSAGetLastError());
-		return 0;
-	}
-
-	//Step 4: Listen request from client
-	if (listen(listenSock, 10)) {
-		printf("Error %d: Cannot place server socket in state LISTEN.", WSAGetLastError());
-		return 0;
-	}
-	//read file Account
-	int aut= Authenticate(session);
-	if (aut == -1)
-	{
-		cout << "Wrong problem with database!" <<endl;
-		return 0;
-	}
-	printf("Server started!\n");
-
-	char sendBuff[BUFF_SIZE], recvBuff[BUFF_SIZE];
-	SOCKET connSock;
-	sockaddr_in clientAddr;
-	int clientAddrLen = sizeof(clientAddr);
-	int ret, i;
-
 	for (i = 1; i < WSA_MAXIMUM_WAIT_EVENTS; i++) {
 		client[i].clientSock = 0;
 	}
@@ -158,8 +120,8 @@ int main(int argc, char* argv[])
 				//Add new socket into socks array
 				int i;
 				if (nEvents == WSA_MAXIMUM_WAIT_EVENTS) {
-					printf("\nToo many clients.");
-					closesocket(connSock);
+					printf("\nStart new thread\n");
+					_beginthreadex(0, 0, subThread, (void*)listenSock, 0, 0);
 				}
 				else
 				{
@@ -181,7 +143,7 @@ int main(int argc, char* argv[])
 					continue;
 				}
 				WSAResetEvent(events[index]);
-				ServerHandle(client[index]);
+				ServerHandle(client[index],client,index,nEvents,events);
 			}
 
 			if (sockEvent.lNetworkEvents & FD_CLOSE) {
@@ -204,4 +166,49 @@ int main(int argc, char* argv[])
 			}
 		}
 	}
+}
+
+int main(int argc, char* argv[])
+{
+
+	//Step 1: Initiate WinSock
+	WSADATA wsaData;
+	WORD wVersion = MAKEWORD(2, 2);
+	if (WSAStartup(wVersion, &wsaData)) {
+		printf("Winsock 2.2 is not supported\n");
+		return 0;
+	}
+
+	//Step 2: Construct LISTEN socket	
+	SOCKET listenSock;
+	listenSock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+
+	//Step 3: Bind address to socket
+	sockaddr_in serverAddr;
+	serverAddr.sin_family = AF_INET;
+	serverAddr.sin_port = htons(PORT);
+	inet_pton(AF_INET, SERVER_ADDR, &serverAddr.sin_addr);
+
+
+	if (bind(listenSock, (sockaddr *)&serverAddr, sizeof(serverAddr)))
+	{
+		printf("Error %d: Cannot associate a local address with server socket.", WSAGetLastError());
+		return 0;
+	}
+
+	//Step 4: Listen request from client
+	if (listen(listenSock, 10)) {
+		printf("Error %d: Cannot place server socket in state LISTEN.", WSAGetLastError());
+		return 0;
+	}
+	//read file Account
+	int aut= Authenticate(session);
+	if (aut == -1)
+	{
+		cout << "Wrong problem with database!" <<endl;
+		return 0;
+	}
+	printf("Server started!\n");
+	_beginthreadex(0, 0, subThread, (void*)listenSock, 0, 0);
+	_getch();
 }
