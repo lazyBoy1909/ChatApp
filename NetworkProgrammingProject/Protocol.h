@@ -24,6 +24,7 @@ using namespace std;
 #define ADD_FAIL_OFFLINE "41"
 #define LEAVE_SUCCESS "60"
 #define LEAVE_ALONE "61"
+#define WSA_MAXIMUM_WAIT_EVENT 3
 struct SocketInfo
 {
 	SOCKET clientSock;

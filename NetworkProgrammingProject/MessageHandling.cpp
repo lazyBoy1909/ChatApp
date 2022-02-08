@@ -97,7 +97,7 @@ int sendMessage(SOCKET connectionSocket, string message)
 	return 1;
 }
 //find Socket information are loggin with username
-SocketInfo& findUserInfo(map<account, SocketInfo> &session, string username, CRITICAL_SECTION &sessionCriticalSection)
+SocketInfo& findUserInfo(map<account, SocketInfo> &session, string username, CRITICAL_SECTION sessionCriticalSection)
 {
 	SocketInfo tmp;
 	tmp.clientSock == INVALID_SOCKET;
@@ -114,7 +114,7 @@ SocketInfo& findUserInfo(map<account, SocketInfo> &session, string username, CRI
 	return tmp;
 }
 
-string findUserNameBySocketInfo(map<account, SocketInfo>&session, SocketInfo& client, CRITICAL_SECTION &sessionCriticalSection)
+string findUserNameBySocketInfo(map<account, SocketInfo>&session, SocketInfo& client, CRITICAL_SECTION sessionCriticalSection)
 {
 	EnterCriticalSection(&sessionCriticalSection);
 	map<account, SocketInfo>::iterator it;

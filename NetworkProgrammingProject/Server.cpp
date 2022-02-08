@@ -76,7 +76,7 @@ void ServerHandle(SocketInfo &clientManager, SocketInfo* client, DWORD &index, D
 unsigned __stdcall subThread(void *param)
 {
 	SocketInfo client[MAX_CLIENT];
-	WSAEVENT	events[WSA_MAXIMUM_WAIT_EVENTS];
+	WSAEVENT	events[WSA_MAXIMUM_WAIT_EVENT];
 	DWORD		nEvents = 0;
 	DWORD		index;
 	WSANETWORKEVENTS sockEvent;
@@ -85,7 +85,17 @@ unsigned __stdcall subThread(void *param)
 	sockaddr_in clientAddr;
 	int clientAddrLen = sizeof(clientAddr);
 	int ret, i;
-	SOCKET listenSock = (SOCKET)param;
+	int threadState = 0;
+	SOCKET listenSock = ((SOCKET*)param)[0];
+	if (((SOCKET*)param)[1] != INVALID_SOCKET)
+	{
+		SOCKET connSock = ((SOCKET*)param)[1];
+		client[1].clientSock = connSock;
+		events[1] = WSACreateEvent();
+		cout << "Accept new client from " << endl;
+		WSAEventSelect(client[1].clientSock, events[1], FD_READ | FD_CLOSE);
+		nEvents++;
+	}
 	client[0].clientSock = listenSock;
 	events[0] = WSACreateEvent(); //create new events
 	nEvents++;
@@ -93,15 +103,18 @@ unsigned __stdcall subThread(void *param)
 	// Associate event types FD_ACCEPT and FD_CLOSE
 	// with the listening socket and newEvent   
 	WSAEventSelect(client[0].clientSock, events[0], FD_ACCEPT | FD_CLOSE);
-	for (i = 1; i < WSA_MAXIMUM_WAIT_EVENTS; i++) {
+	for (i = 1; i < WSA_MAXIMUM_WAIT_EVENT; i++) {
+		if (((SOCKET*)param)[1] != INVALID_SOCKET && i == 1) continue;
 		client[i].clientSock = 0;
 	}
+	HANDLE subthread;
 	while (1) {
 		//wait for network events on all socket
+
 		index = WSAWaitForMultipleEvents(nEvents, events, FALSE, WSA_INFINITE, FALSE);
 		if (index == WSA_WAIT_FAILED) {
 			printf("Error %d: WSAWaitForMultipleEvents() failed\n", WSAGetLastError());
-			continue;
+			break;
 		}
 		index = index - WSA_WAIT_EVENT_0;
 		WSAEnumNetworkEvents(client[index].clientSock, events[index], &sockEvent);
@@ -118,12 +131,23 @@ unsigned __stdcall subThread(void *param)
 					printf("Error %d: Cannot permit incoming connection.\n", WSAGetLastError());
 					continue;
 				}
-
 				//Add new socket into socks array
 				int i;
-				if (nEvents == WSA_MAXIMUM_WAIT_EVENTS) {
-					printf("\nStart new thread\n");
-					_beginthreadex(0, 0, subThread, (void*)listenSock, 0, 0);
+				if (nEvents >= WSA_MAXIMUM_WAIT_EVENT) {
+					if (threadState == 0)
+					{
+						SOCKET param[2];
+						param[0] = listenSock;
+						param[1] = connSock;
+						printf("\nStart new thread\n");
+						//WSACloseEvent(events[0]);
+						//client[0] = client[nEvents - 1];
+						//events[0] = events[nEvents - 1];
+						//client[nEvents - 1].clientSock = 0;
+						//events[nEvents - 1] = 0;
+						subthread= (HANDLE)_beginthreadex(0, 0, subThread, (void*)param, 0, 0);
+						threadState = 1;
+					}
 				}
 				else
 				{
@@ -168,6 +192,8 @@ unsigned __stdcall subThread(void *param)
 			}
 		}
 	}
+	WaitForSingleObject(subthread, INFINITE);
+	return 0;
 }
 
 int main(int argc, char* argv[])
@@ -213,6 +239,9 @@ int main(int argc, char* argv[])
 	printf("Server started!\n");
 	InitializeCriticalSection(&sessionCriticalSection);
 	InitializeCriticalSection(&groupCriticalSection);
-	_beginthreadex(0, 0, subThread, (void*)listenSock, 0, 0);
+	SOCKET param[2];
+	param[0] = listenSock;
+	param[1] = INVALID_SOCKET;
+	_beginthreadex(0, 0, subThread, (void*)param, 0, 0);
 	_getch();
 }

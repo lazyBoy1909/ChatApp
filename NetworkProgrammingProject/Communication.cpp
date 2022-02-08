@@ -8,7 +8,7 @@
 #include<map>
 using namespace std;
 //vector[0] for sender, vector[1] for receiver
-void getListGroup(map<account, SocketInfo> &session, vector<Group> &groups, string sender, CRITICAL_SECTION &sessionCriticalSection, CRITICAL_SECTION &groupCriticalSection)
+void getListGroup(map<account, SocketInfo> &session, vector<Group> &groups, string sender, CRITICAL_SECTION sessionCriticalSection, CRITICAL_SECTION groupCriticalSection)
 {
 	string res = "LISTGROUP";
 	EnterCriticalSection(&groupCriticalSection);
@@ -30,7 +30,7 @@ void getListGroup(map<account, SocketInfo> &session, vector<Group> &groups, stri
 	LeaveCriticalSection(&groupCriticalSection);
 	sendMessage(findUserInfo(session, sender,sessionCriticalSection).clientSock, res);
 }
-void PostMessage(map<account, SocketInfo> &session,string sender, string receiver, string message, CRITICAL_SECTION &sessionCriticalSection)
+void PostMessage(map<account, SocketInfo> &session,string sender, string receiver, string message, CRITICAL_SECTION sessionCriticalSection)
 {
 	string temp1 = "POST";
 	 temp1+= SPACE_2;
@@ -51,7 +51,7 @@ void PostMessage(map<account, SocketInfo> &session,string sender, string receive
 	 }
 	 sendMessage(findUserInfo(session, sender, sessionCriticalSection).clientSock, temp1);
 }
-void getListUser(map<account, SocketInfo> &session, string sender, CRITICAL_SECTION &sessionCriticalSection)
+void getListUser(map<account, SocketInfo> &session, string sender, CRITICAL_SECTION sessionCriticalSection)
 {
 	string res = "LISTUSER";
 	EnterCriticalSection(&sessionCriticalSection);
@@ -68,7 +68,7 @@ void getListUser(map<account, SocketInfo> &session, string sender, CRITICAL_SECT
 	sendMessage(findUserInfo(session, sender, sessionCriticalSection).clientSock, res);
 }
 
-void createGroup(vector<Group> &groups, map<account, SocketInfo> &session, vector<string> message, CRITICAL_SECTION &sessionCriticalSection, CRITICAL_SECTION &groupCriticalSection)
+void createGroup(vector<Group> &groups, map<account, SocketInfo> &session, vector<string> message, CRITICAL_SECTION sessionCriticalSection, CRITICAL_SECTION groupCriticalSection)
 {
 	string res = "GROUP";
 	res += SPACE_2;
@@ -102,7 +102,7 @@ void createGroup(vector<Group> &groups, map<account, SocketInfo> &session, vecto
 }
 
 
-void sendGroupMessage(map<account, SocketInfo> &session,vector<Group> &groups, string groupName, string sender, string payload, CRITICAL_SECTION &sessionCriticalSection, CRITICAL_SECTION &groupCriticalSection)
+void sendGroupMessage(map<account, SocketInfo> &session,vector<Group> &groups, string groupName, string sender, string payload, CRITICAL_SECTION sessionCriticalSection, CRITICAL_SECTION groupCriticalSection)
 {
 	string response = "MESSAGEGROUP";
 	response += SPACE_2;
@@ -127,23 +127,24 @@ void sendGroupMessage(map<account, SocketInfo> &session,vector<Group> &groups, s
 	}
 	LeaveCriticalSection(&groupCriticalSection);
 }
-void updateGroup(map<account, SocketInfo> &session,vector<Group> &groups, string nameMember, CRITICAL_SECTION &sessionCriticalSection, CRITICAL_SECTION &groupCriticalSection)
-{
-	for (int i = 0; i < groups.size(); i++)
-	{
-		vector<string> list = groups[i].userMember;
-		vector<string>::iterator it;
-		it = find(list.begin(), list.end(), nameMember);
-		if (it != list.end())
-		{
-			for (int k = 0; k<list.size(); k++)
-			{
-				getListGroup(session, groups, list[k],sessionCriticalSection,groupCriticalSection);
-			}
-		}
-	}
-}
-void addGroupMember(map<account, SocketInfo> &session, vector<Group> &groups, vector<string> message, CRITICAL_SECTION &sessionCriticalSection, CRITICAL_SECTION &groupCriticalSection)
+//void updateGroup(map<account, SocketInfo> &session,vector<Group> &groups, string nameMember, CRITICAL_SECTION sessionCriticalSection, CRITICAL_SECTION groupCriticalSection)
+//{
+//	if (nameMember.size() == 0) return;
+//	for (int i = 0; i < groups.size(); i++)
+//	{
+//		vector<string> list = groups[i].userMember;
+//		vector<string>::iterator it;
+//		it = find(list.begin(), list.end(), nameMember);
+//		if (it != list.end())
+//		{
+//			for (int k = 0; k<list.size(); k++)
+//			{
+//				getListGroup(session, groups, list[k],sessionCriticalSection,groupCriticalSection);
+//			}
+//		}
+//	}
+//}
+void addGroupMember(map<account, SocketInfo> &session, vector<Group> &groups, vector<string> message, CRITICAL_SECTION sessionCriticalSection, CRITICAL_SECTION groupCriticalSection)
 {
 	string res = "ADD";
 	res += SPACE_2;
@@ -181,7 +182,7 @@ void addGroupMember(map<account, SocketInfo> &session, vector<Group> &groups, ve
 	}
 }
 
-void leaveGroup(map<account, SocketInfo> &session, vector<Group> &groups, string groupName, string sender, CRITICAL_SECTION &sessionCriticalSection, CRITICAL_SECTION &groupCriticalSection)
+void leaveGroup(map<account, SocketInfo> &session, vector<Group> &groups, string groupName, string sender, CRITICAL_SECTION sessionCriticalSection, CRITICAL_SECTION groupCriticalSection)
 {
 	string res = "LEAVE";
 	res += SPACE_2;

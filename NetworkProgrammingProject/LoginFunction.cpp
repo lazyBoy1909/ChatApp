@@ -38,7 +38,7 @@ int Authenticate(map<account, SocketInfo> &session)
 	return returnVal;
 }
 
-string LoginHandling(map<account, SocketInfo>&session,account acc,sockaddr_in clientAddr, SOCKET clientSock, CRITICAL_SECTION &sessionCriticalSection)
+string LoginHandling(map<account, SocketInfo>&session,account acc,sockaddr_in clientAddr, SOCKET clientSock, CRITICAL_SECTION sessionCriticalSection)
 {
 	//no DB- no account exist
 	string ans = "USER";
@@ -73,7 +73,7 @@ string LoginHandling(map<account, SocketInfo>&session,account acc,sockaddr_in cl
 	return ans;
 }
 
-string LogoutHandling(map<account, SocketInfo> &session, string username, CRITICAL_SECTION &sessionCriticalSection)
+string LogoutHandling(map<account, SocketInfo> &session, string username, CRITICAL_SECTION sessionCriticalSection)
 {
 	string ans = "QUIT";
 	ans += SPACE_2;
@@ -83,7 +83,7 @@ string LogoutHandling(map<account, SocketInfo> &session, string username, CRITIC
 	ans+=LOGOUT_SUCCESS;
 	return ans;
 }
-string deleteLoginSession(map<account, SocketInfo> &session, vector<Group> &groups, SocketInfo &client, CRITICAL_SECTION &sessionCriticalSection, CRITICAL_SECTION &groupCriticalSection)
+string deleteLoginSession(map<account, SocketInfo> &session, vector<Group> &groups, SocketInfo &client, CRITICAL_SECTION sessionCriticalSection, CRITICAL_SECTION groupCriticalSection)
 {
 	string userName = findUserNameBySocketInfo(session, client,sessionCriticalSection);
 	string res = LogoutHandling(session, userName,sessionCriticalSection);

@@ -1,3 +1,5 @@
 tungbt 1
 ductq 0
 admin 1
+namdp 1
+sondd 1
