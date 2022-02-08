@@ -46,6 +46,7 @@ string LoginHandling(map<account, SocketInfo>&session,account acc,sockaddr_in cl
 	int check = 0;
 	map<account, SocketInfo>::iterator it;
 	EnterCriticalSection(&sessionCriticalSection);
+	//check if account is valid
 	for (it = session.begin(); it != session.end(); it++)
 	{
 		if (it->first.username == acc.username && it->first.password == acc.password)
@@ -78,6 +79,7 @@ string LogoutHandling(map<account, SocketInfo> &session, string username, CRITIC
 	string ans = "QUIT";
 	ans += SPACE_2;
 	EnterCriticalSection(&sessionCriticalSection);
+	//set Socket's information to INVALID_SOCKET
 	findUserInfo(session, username,sessionCriticalSection).clientSock = INVALID_SOCKET;
 	LeaveCriticalSection(&sessionCriticalSection);
 	ans+=LOGOUT_SUCCESS;
@@ -85,9 +87,11 @@ string LogoutHandling(map<account, SocketInfo> &session, string username, CRITIC
 }
 string deleteLoginSession(map<account, SocketInfo> &session, vector<Group> &groups, SocketInfo &client, CRITICAL_SECTION sessionCriticalSection, CRITICAL_SECTION groupCriticalSection)
 {
+	//log out that user
 	string userName = findUserNameBySocketInfo(session, client,sessionCriticalSection);
 	string res = LogoutHandling(session, userName,sessionCriticalSection);
 	EnterCriticalSection(&groupCriticalSection);
+	//delete that user in all groups
 	for (int i = 0; i < groups.size(); i++)
 	{
 		for (int k = 0; k < groups[i].userMember.size(); k++)

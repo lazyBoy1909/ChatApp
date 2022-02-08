@@ -43,6 +43,7 @@ vector<string> ReceiveMessage(SocketInfo* client, DWORD &index, DWORD &nEvents, 
 				cout << "Client disconnected! " << endl;
 				closesocket(client[index].clientSock);
 				WSACloseEvent(events[index]);
+				//delete that client from array of clients and events
 				client[index] = client[nEvents - 1];
 				events[index] = events[nEvents - 1];
 				client[nEvents - 1].clientSock = 0;
@@ -96,13 +97,13 @@ int sendMessage(SOCKET connectionSocket, string message)
 	}
 	return 1;
 }
-//find Socket information are loggin with username
 SocketInfo& findUserInfo(map<account, SocketInfo> &session, string username, CRITICAL_SECTION sessionCriticalSection)
 {
 	SocketInfo tmp;
 	tmp.clientSock == INVALID_SOCKET;
 	EnterCriticalSection(&sessionCriticalSection);
 	map<account, SocketInfo>::iterator it;
+	//find Socket information are loggin with username
 	for (it = session.begin(); it != session.end(); it++)
 	{
 		if (it->first.username == username)
@@ -118,6 +119,7 @@ string findUserNameBySocketInfo(map<account, SocketInfo>&session, SocketInfo& cl
 {
 	EnterCriticalSection(&sessionCriticalSection);
 	map<account, SocketInfo>::iterator it;
+	//find Socket information are loggin with socket's information
 	for (it = session.begin(); it != session.end(); it++)
 	{
 		if (it->second.clientSock == client.clientSock)
@@ -130,6 +132,7 @@ string findUserNameBySocketInfo(map<account, SocketInfo>&session, SocketInfo& cl
 }
 Group getGroupByName(vector<Group> groups, string name)
 {
+	//get group by group's name
 	for (int i = 0; i < groups.size(); i++)
 	{
 		if (groups[i].name == name) return groups[i];

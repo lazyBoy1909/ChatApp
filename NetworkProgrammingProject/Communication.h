@@ -71,8 +71,6 @@ void sendGroupMessage(map<account, SocketInfo> &session,vector<Group> &groups, s
 **/
 void addGroupMember(map<account, SocketInfo> &session, vector<Group> &groups, vector<string> message, CRITICAL_SECTION sessionCriticalSection, CRITICAL_SECTION groupCriticalSection);
 
-//void updateGroup(map<account, SocketInfo> &session,vector<Group> &groups, string nameMember, CRITICAL_SECTION sessionCriticalSection, CRITICAL_SECTION groupCriticalSection);
-
 /**
 *	@function: leaveGroup: Handle leaving group request from client
 *	@param session(map<account, SocketInfo>): a map stores account's information and manages login session
