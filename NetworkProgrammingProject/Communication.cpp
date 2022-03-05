@@ -94,9 +94,10 @@ void createGroup(vector<Group> &groups, map<account, SocketInfo> &session, vecto
 	Group newGroup;
 	newGroup.userMember.clear();
 	newGroup.name = message[1];
-	//add all members to new groups
+	//add all online members to new groups
 	for (int i = 2; i < message.size(); i++)
 	{
+		if(findUserInfo(session,message[i],sessionCriticalSection).clientSock != INVALID_SOCKET)
 		newGroup.userMember.push_back(message[i]);
 	}
 	//add new group to list of current groups
@@ -163,6 +164,7 @@ void addGroupMember(map<account, SocketInfo> &session, vector<Group> &groups, ve
 					{
 						//add to group
 						groups[i].userMember.push_back(message[k]);
+						res += SPACE_2;
 						res += message[k];
 					}
 				}
@@ -199,13 +201,13 @@ void leaveGroup(map<account, SocketInfo> &session, vector<Group> &groups, string
 	{
 		return;
 	}
-	//sender is the last member in tha group
-	else if (groups[i].userMember.size() == 1)
+	//sender is the last member in the group
+	else if (groups[i].userMember.size() == 1 ||(groups[i].userMember.size() == 2 && (groups[i].userMember[0] == sender || groups[i].userMember[1] == sender)))
 	{
 		//delete that group
 		groups[i].userMember.erase(it, it + 1);
 		groups.erase(groups.begin() + i);
-		res += LEAVE_ALONE;
+		res += LEAVE_SUCCESS;
 		res += SPACE_2;
 		res += groupName;
 		//send response to request's sender

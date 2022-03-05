@@ -68,6 +68,7 @@ vector<string> ReceiveMessage(SocketInfo* client, DWORD &index, DWORD &nEvents, 
 int sendMessage(SOCKET connectionSocket, string message)
 {
 	message += (string)SPACE_1;
+	cout << message << endl;
 	char tempStr[BUFF_SIZE];
 	int leftBytes = message.length();
 	int index = 0;

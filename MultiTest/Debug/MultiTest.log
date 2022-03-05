@@ -1,0 +1,8 @@
+﻿  MultiTest.cpp
+c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\multitest\multitest.cpp(119): warning C4101: 'buff': unreferenced local variable
+c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\multitest\multitest.cpp(172): warning C4101: 'buff': unreferenced local variable
+c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\multitest\multitest.cpp(212): warning C4715: 'thread': not all control paths return a value
+c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\multitest\multitest.cpp(245): warning C4715: 'thread1': not all control paths return a value
+c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\multitest\multitest.cpp(291): warning C4715: 'thread2': not all control paths return a value
+  MultiTest.vcxproj -> C:\Users\admin\Documents\Visual Studio 2015\Projects\NetworkProgrammingProject\Debug\MultiTest.exe
+  MultiTest.vcxproj -> C:\Users\admin\Documents\Visual Studio 2015\Projects\NetworkProgrammingProject\Debug\MultiTest.pdb (Partial PDB)

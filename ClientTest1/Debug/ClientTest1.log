@@ -1,6 +1,2 @@
-﻿  MessageHandling.cpp
-c:\users\admin\documents\visual studio 2015\projects\networkprogrammingproject\clienttest1\messagehandling.cpp(27): warning C4018: '<': signed/unsigned mismatch
-  ClientTest1.cpp
-  Generating Code...
-  ClientTest1.vcxproj -> C:\Users\admin\Documents\Visual Studio 2015\Projects\NetworkProgrammingProject\Debug\ClientTest1.exe
+﻿  ClientTest1.vcxproj -> C:\Users\admin\Documents\Visual Studio 2015\Projects\NetworkProgrammingProject\Debug\ClientTest1.exe
   ClientTest1.vcxproj -> C:\Users\admin\Documents\Visual Studio 2015\Projects\NetworkProgrammingProject\Debug\ClientTest1.pdb (Partial PDB)

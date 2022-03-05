@@ -21,9 +21,7 @@ using namespace std;
 #define GROUP_SUCCESS "30"
 #define GROUP_FAIL_NAME "31"
 #define ADD_SUCCESS "40"
-#define ADD_FAIL_OFFLINE "41"
 #define LEAVE_SUCCESS "60"
-#define LEAVE_ALONE "61"
 struct SocketInfo
 {
 	SOCKET clientSock;

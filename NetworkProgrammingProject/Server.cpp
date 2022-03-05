@@ -153,7 +153,7 @@ unsigned __stdcall subThread(void *param)
 						subthread= (HANDLE)_beginthreadex(0, 0, subThread, (void*)param, 0, 0);
 						threadState = 1;
 					}
-				}
+				}	
 				//Add new socket into array of clients
 				else
 				{
@@ -202,7 +202,6 @@ unsigned __stdcall subThread(void *param)
 			}
 		}
 	}
-	WaitForSingleObject(subthread, INFINITE);
 	return 0;
 }
 
